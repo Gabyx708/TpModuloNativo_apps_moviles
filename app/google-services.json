@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "932574370574",
+    "project_id": "compartir-eb741",
+    "storage_bucket": "compartir-eb741.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:932574370574:android:a43a76596c7aadbff2d55f",
+        "android_client_info": {
+          "package_name": "com.example.tpmodulonativo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEoum0GXF2Ivt49ln8sl4WVrPuahJGLk4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
