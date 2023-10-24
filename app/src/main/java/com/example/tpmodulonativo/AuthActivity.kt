@@ -3,6 +3,7 @@ package com.example.tpmodulonativo
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import androidx.activity.ComponentActivity
@@ -38,8 +39,10 @@ class AuthActivity : ComponentActivity() {
                     FirebaseAuth.getInstance().createUserWithEmailAndPassword(emailText!!.text.toString(),
                         passwordText!!.text.toString()).addOnCompleteListener{
                             if(it.isSuccessful){
+                                Log.d("login success",emailText!!.text.toString())
                                 showHome(it.result?.user?.email?: "",ProviderType.BASIC)
                             }else{
+                                Log.d("login error",emailText!!.text.toString()+passwordText!!.text.toString())
                                 showAlert()
                             }
                     }
