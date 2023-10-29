@@ -12,3 +12,5 @@ val Pink40 = Color(0xFF7D5260)
 
 val White = Color.White
 val Black = Color.Black
+val principalColor = Color.Red
+val secondaryColor = Color.Yellow
