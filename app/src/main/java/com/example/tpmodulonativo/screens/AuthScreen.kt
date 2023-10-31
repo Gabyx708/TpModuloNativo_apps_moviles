@@ -38,6 +38,7 @@ import androidx.compose.material.icons.Icons.Default
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.tpmodulonativo.R
 import com.example.tpmodulonativo.interfaces.SessionUserHandler
 

@@ -8,4 +8,5 @@ class User {
     var LastName : String? = null
     var Email : String? = null
     var Birthday : Date? =  null
+    var Ubication : GeoPoint? = null
 }
