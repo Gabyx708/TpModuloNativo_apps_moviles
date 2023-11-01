@@ -30,25 +30,26 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavController
 import com.example.tpmodulonativo.interfaces.ISessionUserHandler
-
+import com.example.tpmodulonativo.navigation.AppScreens
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun AuthScreen(ButtonHandler : ISessionUserHandler) {
+fun AuthScreen(ButtonHandler : ISessionUserHandler,navController: NavController) {
 
     val usuarioState = remember { mutableStateOf(TextFieldValue("")) }
     val passwordState = remember { mutableStateOf(TextFieldValue("")) }
 
     Scaffold() {
-        BodyContent(ButtonHandler,usuarioState,passwordState)
+        BodyContent(ButtonHandler,usuarioState,passwordState,navController)
     }
 }
 
 
 @Composable
-fun BodyContent(ButtonHandler : ISessionUserHandler, usuarioState: MutableState<TextFieldValue>, passwordState: MutableState<TextFieldValue>){
+fun BodyContent(ButtonHandler : ISessionUserHandler, usuarioState: MutableState<TextFieldValue>, passwordState: MutableState<TextFieldValue>,navController: NavController){
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -58,7 +59,7 @@ fun BodyContent(ButtonHandler : ISessionUserHandler, usuarioState: MutableState<
         Spacer(modifier = Modifier.height(8.dp))
         InputPasswordField(passwordState)
         Spacer(modifier = Modifier.height(8.dp))
-        ButtonsGroup(ButtonHandler,usuarioState.value.text,passwordState.value.text)
+        ButtonsGroup(ButtonHandler,usuarioState.value.text,passwordState.value.text, navController)
     }
 }
 
@@ -97,7 +98,7 @@ fun InputPasswordField(passwordState: MutableState<TextFieldValue>) {
 }
 
 @Composable
-fun ButtonsGroup(ButtonHandler : ISessionUserHandler, usuario:String, password:String){
+fun ButtonsGroup(ButtonHandler : ISessionUserHandler, usuario:String, password:String,navController: NavController){
 
     Row {
 
@@ -105,7 +106,7 @@ fun ButtonsGroup(ButtonHandler : ISessionUserHandler, usuario:String, password:S
             Text(text = "inciar sesion")
         }
         Spacer(modifier = Modifier.width(10.dp))
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = { navController.navigate(AppScreens.RegisterFormScreen.route) }) {
             Text(text = "registrame")
         }
     }

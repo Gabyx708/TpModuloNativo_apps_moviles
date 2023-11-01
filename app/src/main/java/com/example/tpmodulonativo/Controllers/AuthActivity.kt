@@ -1,23 +1,24 @@
-package com.example.tpmodulonativo
+package com.example.tpmodulonativo.Controllers
 
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.navigation.NavController
 import com.example.tpmodulonativo.interfaces.ISessionUserHandler
+import com.example.tpmodulonativo.navigation.AppScreens
 import com.example.tpmodulonativo.screens.AuthScreen
 import com.example.tpmodulonativo.ui.theme.TpModuloNativoTheme
 import com.google.firebase.auth.FirebaseAuth
 
-class AuthActivity : ComponentActivity() , ISessionUserHandler {
+class AuthActivity(val navController: NavController): ComponentActivity() , ISessionUserHandler {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             TpModuloNativoTheme {
-               AuthScreen(this)
             }
         }
 
@@ -27,8 +28,7 @@ class AuthActivity : ComponentActivity() , ISessionUserHandler {
         FirebaseAuth.getInstance().signInWithEmailAndPassword(user,passw)
             .addOnCompleteListener{
                 if(it.isSuccessful){
-                    val intent = Intent(this, HomeActivity::class.java)
-                    startActivity(intent)
+                    navController.navigate(route = AppScreens.HomeScreen.route);
                 }else{
                     showAlert("ocurrio un problema","Ups!!!")
                 }
@@ -47,7 +47,7 @@ class AuthActivity : ComponentActivity() , ISessionUserHandler {
     }
 
     private fun showHome(email: String,provider: ProviderType){
-        val homeIntent = Intent(this,HomeActivity::class.java).apply {
+        val homeIntent = Intent(this, HomeActivity::class.java).apply {
             putExtra("email", email)
             putExtra("provider", provider.name)
         }
