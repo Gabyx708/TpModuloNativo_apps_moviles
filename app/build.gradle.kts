@@ -55,6 +55,7 @@ dependencies {
 
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.4")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.4")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
     val nav_version = "2.5.3"
 
     implementation("androidx.core:core-ktx:1.9.0")

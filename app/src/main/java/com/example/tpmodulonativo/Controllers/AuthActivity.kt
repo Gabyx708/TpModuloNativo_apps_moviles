@@ -1,19 +1,17 @@
 package com.example.tpmodulonativo.Controllers
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.navigation.NavController
 import com.example.tpmodulonativo.interfaces.ISessionUserHandler
 import com.example.tpmodulonativo.navigation.AppScreens
-import com.example.tpmodulonativo.screens.AuthScreen
 import com.example.tpmodulonativo.ui.theme.TpModuloNativoTheme
 import com.google.firebase.auth.FirebaseAuth
 
-class AuthActivity(val navController: NavController): ComponentActivity() , ISessionUserHandler {
-
+class AuthActivity(private val navController: NavController): ComponentActivity() , ISessionUserHandler {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,26 +22,23 @@ class AuthActivity(val navController: NavController): ComponentActivity() , ISes
 
     }
 
-    override fun SignUp(user:String,passw:String){
+    override fun signUp(user:String,passw:String){
         FirebaseAuth.getInstance().signInWithEmailAndPassword(user,passw)
             .addOnCompleteListener{
                 if(it.isSuccessful){
                     navController.navigate(route = AppScreens.HomeScreen.route);
                 }else{
-                    showAlert("ocurrio un problema","Ups!!!")
+                    navController.navigate(route= AppScreens.AuthScreen.route)
                 }
             }
     }
 
 
 
-    private fun showAlert(message:String,title:String){
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(title)
-        builder.setMessage(message)
-        builder.setPositiveButton("Aceptar",null)
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
+
+    private fun showToast(message: String) {
+        val context = this // El contexto de la actividad
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun showHome(email: String,provider: ProviderType){

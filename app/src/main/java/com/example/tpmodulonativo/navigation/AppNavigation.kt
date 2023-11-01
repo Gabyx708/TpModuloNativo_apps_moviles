@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.tpmodulonativo.Controllers.AuthActivity
+import com.example.tpmodulonativo.Controllers.RegisterActivity
 import com.example.tpmodulonativo.screens.AuthScreen
 import com.example.tpmodulonativo.screens.RegisterScreen
 
@@ -26,7 +27,9 @@ fun AppNavigation(){
         }
 
         composable(route = AppScreens.RegisterFormScreen.route){
-            RegisterScreen(navController)
+
+            val register = RegisterActivity()
+            RegisterScreen(navController,register,register)
         }
     }
 }
