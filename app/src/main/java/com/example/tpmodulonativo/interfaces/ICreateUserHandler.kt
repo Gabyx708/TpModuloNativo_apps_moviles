@@ -2,6 +2,6 @@ package com.example.tpmodulonativo.interfaces
 
 import com.example.tpmodulonativo.Models.User
 
-interface CreateUserHandler {
+interface ICreateUserHandler {
     fun CreateNewUser(newUser:User)
 }

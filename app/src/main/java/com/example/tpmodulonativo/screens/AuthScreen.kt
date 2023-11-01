@@ -2,18 +2,13 @@
 
 package com.example.tpmodulonativo.screens
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -29,24 +24,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.icons.Icons.Default
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.tpmodulonativo.R
-import com.example.tpmodulonativo.interfaces.SessionUserHandler
+import com.example.tpmodulonativo.interfaces.ISessionUserHandler
 
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun AuthScreen(ButtonHandler : SessionUserHandler) {
+fun AuthScreen(ButtonHandler : ISessionUserHandler) {
 
     val usuarioState = remember { mutableStateOf(TextFieldValue("")) }
     val passwordState = remember { mutableStateOf(TextFieldValue("")) }
@@ -58,7 +48,7 @@ fun AuthScreen(ButtonHandler : SessionUserHandler) {
 
 
 @Composable
-fun BodyContent(ButtonHandler : SessionUserHandler,usuarioState: MutableState<TextFieldValue>,passwordState: MutableState<TextFieldValue>){
+fun BodyContent(ButtonHandler : ISessionUserHandler, usuarioState: MutableState<TextFieldValue>, passwordState: MutableState<TextFieldValue>){
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -82,6 +72,7 @@ fun InputUserField(usuarioState: MutableState<TextFieldValue>){
     )
 }
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun InputPasswordField(passwordState: MutableState<TextFieldValue>) {
 
@@ -106,7 +97,7 @@ fun InputPasswordField(passwordState: MutableState<TextFieldValue>) {
 }
 
 @Composable
-fun ButtonsGroup(ButtonHandler : SessionUserHandler,usuario:String,password:String){
+fun ButtonsGroup(ButtonHandler : ISessionUserHandler, usuario:String, password:String){
 
     Row {
 
