@@ -28,7 +28,7 @@ class AuthActivity(private val navController: NavController): ComponentActivity(
                 if(it.isSuccessful){
                     navController.navigate(route = AppScreens.HomeScreen.route);
                 }else{
-                    navController.navigate(route= AppScreens.AuthScreen.route)
+                    showToast("Usuario incorrecto")
                 }
             }
     }

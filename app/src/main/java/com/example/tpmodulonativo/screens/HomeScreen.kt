@@ -29,12 +29,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.tpmodulonativo.navigation.AppScreens
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -47,7 +49,7 @@ fun HomeScreen(navController: NavController){
             DecorativeBar()
             UserProfile()
             Spacer(modifier = Modifier.height(10.dp))
-            OptionContainer()
+            OptionContainer(navController)
             Spacer(modifier = Modifier.weight(1f))
             DecorativeBar()
         }
@@ -74,14 +76,14 @@ fun UserProfile(userName: String = "test") {
 
 
 @Composable
-fun OptionContainer(){
+fun OptionContainer(navController: NavController){
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.9f)
     ) {
         Button(
-            onClick = { /* ... */ },
+            onClick = { navController.navigate(AppScreens.MakeDonationScreen.route) },
             contentPadding = PaddingValues(20.dp),
             modifier = Modifier
                 .fillMaxWidth()
@@ -89,6 +91,7 @@ fun OptionContainer(){
                 .padding(16.dp)
                 .weight(1f)
                 .then(Modifier.background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(12.dp)))
+                .testTag("hacer_donation_button")
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -152,13 +155,13 @@ fun DecorativeBar() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview
 @Composable
-fun HomeScreenPreview() {
+fun HomeScreenPreview(navController: NavController) {
     Scaffold() {
         Column {
             DecorativeBar()
             UserProfile()
             Spacer(modifier = Modifier.height(10.dp))
-            OptionContainer()
+            OptionContainer(navController)
             Spacer(modifier = Modifier.weight(1f))
             DecorativeBar()
         }

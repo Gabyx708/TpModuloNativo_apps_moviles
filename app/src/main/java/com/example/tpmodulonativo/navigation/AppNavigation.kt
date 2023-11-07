@@ -9,6 +9,7 @@ import com.example.tpmodulonativo.Controllers.AuthActivity
 import com.example.tpmodulonativo.Controllers.RegisterActivity
 import com.example.tpmodulonativo.screens.AuthScreen
 import com.example.tpmodulonativo.screens.RegisterScreen
+import com.example.tpmodulonativo.screens.MakeDonationScreen
 
 /*elemento que orquesta la navigacion , amo y señor de
 las pantallas*/
@@ -30,6 +31,9 @@ fun AppNavigation(){
 
             val register = RegisterActivity()
             RegisterScreen(navController,register,register)
+        }
+        composable(route = AppScreens.MakeDonationScreen.route){
+            MakeDonationScreen(navController)
         }
     }
 }
