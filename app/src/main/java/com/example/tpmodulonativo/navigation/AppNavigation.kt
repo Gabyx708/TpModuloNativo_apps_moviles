@@ -1,19 +1,23 @@
 package com.example.tpmodulonativo.navigation
 
 import HomeScreen
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.tpmodulonativo.Controllers.AuthActivity
+import com.example.tpmodulonativo.Controllers.MakeDonationActivity
 import com.example.tpmodulonativo.Controllers.RegisterActivity
 import com.example.tpmodulonativo.screens.AuthScreen
-import com.example.tpmodulonativo.screens.RegisterScreen
 import com.example.tpmodulonativo.screens.MakeDonationScreen
+import com.example.tpmodulonativo.screens.RegisterScreen
 
 /*elemento que orquesta la navigacion , amo y señor de
 las pantallas*/
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun AppNavigation(){
     val navController = rememberNavController() //gestiona el estado de navegacion entre pantallas
@@ -33,7 +37,7 @@ fun AppNavigation(){
             RegisterScreen(navController,register,register)
         }
         composable(route = AppScreens.MakeDonationScreen.route){
-            MakeDonationScreen(navController)
+            MakeDonationScreen(navController,MakeDonationActivity())
         }
     }
 }

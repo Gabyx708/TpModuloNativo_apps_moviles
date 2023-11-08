@@ -37,12 +37,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.tpmodulonativo.Models.Donation
 import com.example.tpmodulonativo.R
+import com.example.tpmodulonativo.interfaces.ICreateDonations
 
 @RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MakeDonationScreen(navController: NavController) {
+fun MakeDonationScreen(navController: NavController, createDonations: ICreateDonations) {
     var donationName by remember { mutableStateOf(TextFieldValue()) }
     var description by remember { mutableStateOf(TextFieldValue()) }
     var observations by remember { mutableStateOf(TextFieldValue()) }
@@ -146,10 +148,12 @@ fun MakeDonationScreen(navController: NavController) {
                     name = donationName.text,
                     description = description.text,
                     observations = observations.text,
-                    imageUri = imageUri
+                    imageUri = imageUri.toString() //? revisar
                 )
 
                 // Realiza la publicación de la donación
+                //agregar validaciones , deberia crear una donacion en la coleccion
+                createDonations.createDonation(donation)
             },
             modifier = Modifier.width(300.dp)
         ) {
@@ -174,9 +178,3 @@ private fun loadBitmapFromUri(activity: AppCompatActivity, uri: Uri): ImageBitma
     }
 }
 
-class Donation(
-    name: String,
-    description: String,
-    observations: String,
-    imageUri: Uri?
-)
