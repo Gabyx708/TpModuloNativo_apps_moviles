@@ -1,6 +1,6 @@
 package com.example.tpmodulonativo.Controllers
 
-import android.content.Intent
+import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -11,7 +11,7 @@ import com.example.tpmodulonativo.navigation.AppScreens
 import com.example.tpmodulonativo.ui.theme.TpModuloNativoTheme
 import com.google.firebase.auth.FirebaseAuth
 
-class AuthActivity(private val navController: NavController): ComponentActivity() , ISessionUserHandler {
+class AuthActivity(private val navController: NavController,context: Context): ComponentActivity() , ISessionUserHandler {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,32 +22,24 @@ class AuthActivity(private val navController: NavController): ComponentActivity(
 
     }
 
-    override fun signUp(user:String,passw:String){
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(user,passw)
-            .addOnCompleteListener{
-                if(it.isSuccessful){
+    override fun signUp(user: String, passw: String, context: Context) {
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(user, passw)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
                     navController.navigate(route = AppScreens.HomeScreen.route);
-                }else{
-                    showToast("Usuario incorrecto")
+                    Toast.makeText(context,"usuario creado exitosamente",Toast.LENGTH_SHORT).show()
+                } else {
+                    SignUpFail("usuario o password incorrecto",context)
                 }
             }
     }
 
-
-
-
-    private fun showToast(message: String) {
-        val context = this // El contexto de la actividad
+    override fun SignUpFail(message: String, context: Context) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun showHome(email: String,provider: ProviderType){
-        val homeIntent = Intent(this, HomeActivity::class.java).apply {
-            putExtra("email", email)
-            putExtra("provider", provider.name)
-        }
-            startActivity(homeIntent)
-        }
-    }
+
+
+}
 
 

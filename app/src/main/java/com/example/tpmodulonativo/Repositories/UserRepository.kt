@@ -4,14 +4,13 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import com.example.tpmodulonativo.Models.User
 import com.example.tpmodulonativo.interfaces.IUserRepository
-import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
 
 class UserRepository(val Store : FirebaseFirestore) : IUserRepository {
 
     override fun InsertUser(NewUser: User): User {
 
+        // agrega el usuario a la DB
         Store.collection("usuarios")
             .add(NewUser)
             .addOnSuccessListener { documentReference ->
@@ -21,10 +20,13 @@ class UserRepository(val Store : FirebaseFirestore) : IUserRepository {
                 Log.w(TAG, "Error adding document", e)
             }
 
-        return  NewUser
+
+        return NewUser
     }
 
     override fun GetUserById(IdUser: String): User {
         TODO("Not yet implemented")
     }
+
 }
+

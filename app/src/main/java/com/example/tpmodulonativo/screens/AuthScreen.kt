@@ -2,6 +2,8 @@
 
 package com.example.tpmodulonativo.screens
 import android.annotation.SuppressLint
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
@@ -59,7 +62,8 @@ fun BodyContent(ButtonHandler : ISessionUserHandler, usuarioState: MutableState<
         Spacer(modifier = Modifier.height(8.dp))
         InputPasswordField(passwordState)
         Spacer(modifier = Modifier.height(8.dp))
-        ButtonsGroup(ButtonHandler,usuarioState.value.text,passwordState.value.text, navController)
+        ButtonsGroup(ButtonHandler,usuarioState.value.text,passwordState.value.text, navController,
+            LocalContext.current  )
     }
 }
 
@@ -98,13 +102,19 @@ fun InputPasswordField(passwordState: MutableState<TextFieldValue>) {
 }
 
 @Composable
-fun ButtonsGroup(ButtonHandler : ISessionUserHandler, usuario:String, password:String,navController: NavController){
-
-
+fun ButtonsGroup(ButtonHandler : ISessionUserHandler, usuario:String, password:String,navController: NavController,context: Context){
 
     Row {
 
-        Button(onClick ={ButtonHandler.signUp(usuario,password)}) {
+        Button(onClick = {
+
+            if(usuario == "" || password == ""){
+                Toast.makeText(context, "Usuario o contraseña vacíos", Toast.LENGTH_SHORT).show()
+            }else{
+                ButtonHandler.signUp(usuario,password, context)
+            }
+
+        }) {
             Text(text = "inciar sesion")
         }
         Spacer(modifier = Modifier.width(10.dp))

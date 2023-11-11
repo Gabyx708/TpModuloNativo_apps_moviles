@@ -1,7 +1,9 @@
 package com.example.tpmodulonativo.screens
 
 import android.app.DatePickerDialog
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,25 +50,28 @@ import java.util.Calendar
 
 @Composable
 fun RegisterScreen(navController: NavController,createUserHandler: ICreateUserHandler,geoManager: IGeoManager){
-        RegistrationForm(createUserHandler,geoManager)
+        RegistrationForm(createUserHandler,geoManager, LocalContext.current )
 }
 
-//@Preview(showSystemUi = true)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegistrationForm(createUserHandler: ICreateUserHandler,geoManager:IGeoManager) {
+fun RegistrationForm(createUserHandler: ICreateUserHandler,geoManager:IGeoManager,context:Context) {
     var firstName by remember { mutableStateOf(TextFieldValue()) }
     var lastName by remember { mutableStateOf(TextFieldValue()) }
     var birthDate by remember { mutableStateOf(TextFieldValue()) }
     var nickname by remember { mutableStateOf(TextFieldValue()) }
     var location by remember { mutableStateOf(TextFieldValue()) }
     var Email by remember{ mutableStateOf(TextFieldValue())}
+    var password by remember{ mutableStateOf(TextFieldValue())}
+    var passwordRepeat by remember{ mutableStateOf(TextFieldValue())}
 
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
+            .background(Color.White)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -113,8 +118,8 @@ fun RegistrationForm(createUserHandler: ICreateUserHandler,geoManager:IGeoManage
 
         TextField(
             shape = RoundedCornerShape(10.dp),
-            value = location,
-            onValueChange = { location = it },
+            value = password,
+            onValueChange = { password = it },
             label = { Text("password") }
         )
 
@@ -122,8 +127,8 @@ fun RegistrationForm(createUserHandler: ICreateUserHandler,geoManager:IGeoManage
         
         TextField(
             shape = RoundedCornerShape(10.dp),
-            value = location,
-            onValueChange = { location = it },
+            value = passwordRepeat,
+            onValueChange = { passwordRepeat = it },
             label = { Text("repetir password") }
         )
 
@@ -142,13 +147,39 @@ fun RegistrationForm(createUserHandler: ICreateUserHandler,geoManager:IGeoManage
         Button(
             onClick = {
 
+                if(nickname.text == "" || firstName.text ==""){
+                    Toast.makeText(context,"usuario o apodo vacios",Toast.LENGTH_SHORT).show()
+                    return@Button
+                }
+
+                if(passwordRepeat != password){
+                    Toast.makeText(context,"ambas contraseñas deben ser iguales",Toast.LENGTH_SHORT).show()
+                    return@Button
+                }
+
+                if(passwordRepeat.text.length < 8){
+                    Toast.makeText(context,"la contraseña deben tener al menos 8 caracteres",Toast.LENGTH_SHORT).show()
+                    return@Button
+                }
+
+                if(dateStr == ""){
+                    Toast.makeText(context,"ingresa una fecha",Toast.LENGTH_SHORT).show()
+                    return@Button
+                }
+
+                if(Email.text == ""){
+                    Toast.makeText(context,"ingresa un mail valido",Toast.LENGTH_SHORT).show()
+                    return@Button
+                }
+
                 val user = User(
                     nickName = nickname.text,
                     name = firstName.text,
                     lastName = lastName.text,
                     email = Email.text,
                     birthday = SimpleDateFormat("dd/MM/yyyy").parse(dateStr),
-                    geoPoint = GeoPoint(34.34343434,32.34343434)
+                    geoPoint = GeoPoint(34.34343434,32.34343434),
+                    password = password.text
                 )
 
                 registerUser(user,createUserHandler)},
@@ -186,10 +217,10 @@ fun DatePicker() : String{
     )
 
     Box(modifier = Modifier
-        .fillMaxWidth()
-        .background(Color.White)){
-            Row(modifier = Modifier.align(Alignment.Center)){
+        .fillMaxWidth()){
+            Row(modifier = Modifier.align(Alignment.Center).padding(19.dp)){
                     OutlinedTextField(
+                        modifier = Modifier.width(150.dp),
                         value = date
                         , onValueChange = {date = it}
                         , readOnly = true,
