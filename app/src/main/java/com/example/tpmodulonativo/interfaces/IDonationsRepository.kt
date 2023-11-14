@@ -8,4 +8,5 @@ interface IDonationsRepository {
     fun InsertDonation(donation: Donation)
     fun GetUserDonations(idUser:String) : List<Donation>
     fun GetDonation(idDonation: String): Task<Donation>
+    fun GetAllDonations(): Task<List<Donation>>
 }

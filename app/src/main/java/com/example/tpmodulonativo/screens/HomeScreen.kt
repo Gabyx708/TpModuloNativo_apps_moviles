@@ -112,7 +112,7 @@ fun OptionContainer(navController: NavController){
         }
 
         Button(
-            onClick = { /* ... */ },
+            onClick = { navController.navigate(AppScreens.SearchDonationScreen.route) },
             contentPadding = PaddingValues(20.dp),
             modifier = Modifier
                 .fillMaxWidth()
