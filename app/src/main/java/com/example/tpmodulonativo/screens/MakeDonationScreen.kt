@@ -2,6 +2,7 @@ package com.example.tpmodulonativo.screens
 
 import DecorativeBar
 import UserProfile
+import android.content.Intent
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
@@ -24,6 +25,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +42,7 @@ import androidx.navigation.NavController
 import com.example.tpmodulonativo.Models.Donation
 import com.example.tpmodulonativo.R
 import com.example.tpmodulonativo.interfaces.ICreateDonations
+import com.example.tpmodulonativo.navigation.AppScreens
 
 @RequiresApi(Build.VERSION_CODES.P)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
@@ -51,14 +54,17 @@ fun MakeDonationScreen(navController: NavController, createDonations: ICreateDon
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
 
-
     val activity = (navController.context as AppCompatActivity)
 
-    val galleryLauncher: ActivityResultLauncher<String> = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+    val galleryLauncher: ActivityResultLauncher<Array<String>> = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
         if (uri != null) {
             imageUri = uri
+            activity.contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            )
             val selectedImageBitmap = loadBitmapFromUri(activity, uri)
             imageBitmap = selectedImageBitmap
         }
@@ -71,7 +77,11 @@ fun MakeDonationScreen(navController: NavController, createDonations: ICreateDon
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        DecorativeBar()
+        TopAppBar(
+            title = {
+                Text(text = "Hacer donación")
+            }
+        )
         Spacer(modifier = Modifier.height(16.dp))
         UserProfile()
 
@@ -100,7 +110,7 @@ fun MakeDonationScreen(navController: NavController, createDonations: ICreateDon
             label = { Text("Observaciones") }
         )
 
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
         if (imageBitmap != null) {
             Image(
@@ -110,7 +120,7 @@ fun MakeDonationScreen(navController: NavController, createDonations: ICreateDon
                     .fillMaxWidth()
                     .height(150.dp)
                     .clickable {
-                        galleryLauncher.launch("image/*")
+                        galleryLauncher.launch(arrayOf("image/*"))
                     }
             )
         } else {
@@ -122,7 +132,7 @@ fun MakeDonationScreen(navController: NavController, createDonations: ICreateDon
                     .fillMaxWidth()
                     .height(150.dp)
                     .clickable {
-                        galleryLauncher.launch("image/*")
+                        galleryLauncher.launch(arrayOf("image/*"))
                     }
             )
         }
@@ -132,7 +142,7 @@ fun MakeDonationScreen(navController: NavController, createDonations: ICreateDon
         Button(
             onClick = {
                 // Abrir la galería para seleccionar una imagen
-                galleryLauncher.launch("image/*")
+                galleryLauncher.launch(arrayOf("image/*"))
             },
             modifier = Modifier.width(300.dp)
         ) {
@@ -148,12 +158,14 @@ fun MakeDonationScreen(navController: NavController, createDonations: ICreateDon
                     name = donationName.text,
                     description = description.text,
                     observations = observations.text,
-                    imageUri = imageUri.toString() //? revisar
+                    imageUri = imageUri.toString(), //? revisar
+                    estado = true
                 )
 
                 // Realiza la publicación de la donación
                 //agregar validaciones , deberia crear una donacion en la coleccion
                 createDonations.createDonation(donation)
+                navController.navigate(AppScreens.HomeScreen.route)
             },
             modifier = Modifier.width(300.dp)
         ) {
@@ -167,11 +179,14 @@ fun MakeDonationScreen(navController: NavController, createDonations: ICreateDon
 @RequiresApi(Build.VERSION_CODES.P)
 private fun loadBitmapFromUri(activity: AppCompatActivity, uri: Uri): ImageBitmap? {
     return try {
-        val contentResolver = activity.contentResolver
-        val bitmap = ImageDecoder.decodeBitmap(
-            ImageDecoder.createSource(contentResolver, uri)
+        // Solicita permisos para acceder a la URI
+        activity.contentResolver.takePersistableUriPermission(
+            uri,
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         )
-        bitmap.asImageBitmap()
+
+        val source = ImageDecoder.createSource(activity.contentResolver, uri)
+        ImageDecoder.decodeBitmap(source).asImageBitmap()
     } catch (e: Exception) {
         e.printStackTrace()
         null

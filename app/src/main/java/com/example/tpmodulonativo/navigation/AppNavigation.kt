@@ -12,8 +12,10 @@ import com.example.tpmodulonativo.Controllers.AuthActivity
 import com.example.tpmodulonativo.Controllers.MakeDonationActivity
 import com.example.tpmodulonativo.Controllers.RegisterActivity
 import com.example.tpmodulonativo.screens.AuthScreen
+import com.example.tpmodulonativo.screens.DonationDetailScreen
 import com.example.tpmodulonativo.screens.MakeDonationScreen
 import com.example.tpmodulonativo.screens.RegisterScreen
+import com.example.tpmodulonativo.screens.SearchDonationScreen
 
 /*elemento que orquesta la navigacion , amo y señor de
 las pantallas*/
@@ -42,6 +44,14 @@ fun AppNavigation(){
         }
         composable(route = AppScreens.MakeDonationScreen.route){
             MakeDonationScreen(navController,MakeDonationActivity())
+        }
+        composable(route = AppScreens.SearchDonationScreen.route){
+            SearchDonationScreen(navController)
+        }
+        composable(route = "${AppScreens.DonationDetailScreen.route}/{donationId}") { backStackEntry ->
+            val arguments = requireNotNull(backStackEntry.arguments)
+            val donationId = arguments.getString("donationId") ?: ""
+            DonationDetailScreen(navController, donationId)
         }
     }
 }
