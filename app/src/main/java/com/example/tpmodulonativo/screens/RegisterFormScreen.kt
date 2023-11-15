@@ -135,7 +135,7 @@ fun RegistrationForm(createUserHandler: ICreateUserHandler,geoManager:IGeoManage
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { geoManager.getUserLocation()},
+            onClick = { geoManager.getUserLocation(context)},
             modifier = Modifier.width(300.dp)
         ) {
 
