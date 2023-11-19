@@ -1,6 +1,7 @@
 package com.example.tpmodulonativo.Models
 
-import com.google.firebase.firestore.GeoPoint
+
+import GeoPoint
 import java.util.Date
 
 class User (nickName : String,name:String,lastName:String,email:String,birthday:Date,geoPoint: GeoPoint,password:String){

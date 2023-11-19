@@ -1,6 +1,7 @@
 package com.example.tpmodulonativo.Controllers
 
-import LocationManagerUtil
+import GeoPoint
+import LocationActivity
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.location.LocationManager
@@ -18,7 +19,6 @@ import com.example.tpmodulonativo.navigation.AppScreens
 import com.example.tpmodulonativo.ui.theme.TpModuloNativoTheme
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.firestore
 
 class RegisterActivity (private val navController: NavController): AppCompatActivity() , IGeoManager,ICreateUserHandler{
@@ -54,16 +54,26 @@ class RegisterActivity (private val navController: NavController): AppCompatActi
         }
 
     }
-    override fun getUserLocation(context: Context): GeoPoint? {
+
+    override fun getUserLocation(context: Context): GeoPoint {
         Log.d("GEOMANAGER", "EJECUCION IN PROGRESS..")
-        return LocationManagerUtil.provideLocationUpdates(context) { location ->
-            // Aquí puedes realizar alguna acción adicional cuando se actualiza la ubicación
-            Log.d("GEOMANAGER", "Location Updated: ${location.latitude}, ${location.longitude}")
+
+        var geoPoint: GeoPoint? = null
+
+        val locationActivity = LocationActivity()
+        locationActivity.conseguirUbicacion(context) { geoPointObtenido ->
+            // Manejar la ubicación obtenida
+            geoPoint = geoPointObtenido
         }
+
+        // Esperar a que la ubicación se obtenga antes de devolverla
+        while (geoPoint == null) {
+            // Puedes implementar una lógica más elegante aquí, pero por simplicidad,
+            // estoy utilizando un bucle simple para esperar hasta que la ubicación esté disponible.
+        }
+
+        return geoPoint!!
     }
-
-
-
 
 
 

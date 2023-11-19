@@ -1,5 +1,6 @@
 package com.example.tpmodulonativo.screens
 
+import GeoPoint
 import android.app.DatePickerDialog
 import android.content.Context
 import android.util.Log
@@ -43,7 +44,6 @@ import androidx.navigation.NavController
 import com.example.tpmodulonativo.Models.User
 import com.example.tpmodulonativo.interfaces.ICreateUserHandler
 import com.example.tpmodulonativo.interfaces.IGeoManager
-import com.google.firebase.firestore.GeoPoint
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -61,10 +61,10 @@ fun RegistrationForm(createUserHandler: ICreateUserHandler,geoManager:IGeoManage
     var lastName by remember { mutableStateOf(TextFieldValue()) }
     var birthDate by remember { mutableStateOf(TextFieldValue()) }
     var nickname by remember { mutableStateOf(TextFieldValue()) }
-    var location by remember { mutableStateOf(TextFieldValue()) }
     var Email by remember{ mutableStateOf(TextFieldValue())}
     var password by remember{ mutableStateOf(TextFieldValue())}
     var passwordRepeat by remember{ mutableStateOf(TextFieldValue())}
+    var location by remember{ mutableStateOf(GeoPoint(0.0,0.0))}
 
 
     Column(
@@ -135,7 +135,7 @@ fun RegistrationForm(createUserHandler: ICreateUserHandler,geoManager:IGeoManage
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { geoManager.getUserLocation(context)},
+            onClick = { location = geoManager.getUserLocation(context)},
             modifier = Modifier.width(300.dp)
         ) {
 
