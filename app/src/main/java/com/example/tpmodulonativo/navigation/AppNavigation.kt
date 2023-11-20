@@ -34,7 +34,7 @@ fun AppNavigation(){
         }
 
         composable(route = AppScreens.HomeScreen.route){
-            HomeScreen(navController)
+            HomeScreen(navController, LocalContext.current)
         }
 
         composable(route = AppScreens.RegisterFormScreen.route){

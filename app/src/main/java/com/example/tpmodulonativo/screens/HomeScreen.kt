@@ -1,4 +1,5 @@
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,18 +37,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.tpmodulonativo.Repositories.Preferences
 import com.example.tpmodulonativo.navigation.AppScreens
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController){
+fun HomeScreen(navController: NavController,context: Context){
+
+    var preferences = Preferences(context)
+    val NOMBRE_USUARIO = preferences.getName()
 
     Scaffold() {
         Column {
             DecorativeBar()
-            UserProfile()
+            UserProfile(NOMBRE_USUARIO)
             Spacer(modifier = Modifier.height(10.dp))
             OptionContainer(navController)
             Spacer(modifier = Modifier.weight(1f))
@@ -58,7 +63,11 @@ fun HomeScreen(navController: NavController){
 }
 
 @Composable
+<<<<<<< HEAD
 fun UserProfile(userName: String = "Valentin") {
+=======
+fun UserProfile(userName: String = "") {
+>>>>>>> shared-preferences
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(16.dp)

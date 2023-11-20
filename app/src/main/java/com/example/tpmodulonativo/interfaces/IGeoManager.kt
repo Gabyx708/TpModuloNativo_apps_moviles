@@ -1,7 +1,8 @@
 package com.example.tpmodulonativo.interfaces
 
-import com.google.firebase.firestore.GeoPoint
+import GeoPoint
+import android.content.Context
 
 interface IGeoManager {
-    fun getUserLocation(): GeoPoint?
+    fun getUserLocation(context: Context): GeoPoint
 }

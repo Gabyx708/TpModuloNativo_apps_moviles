@@ -1,16 +1,14 @@
 package com.example.tpmodulonativo.Controllers
 
-import android.Manifest
+import GeoPoint
+import LocationActivity
 import android.content.ContentValues.TAG
 import android.content.Context
-import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.example.tpmodulonativo.Models.User
 import com.example.tpmodulonativo.Repositories.UserRepository
@@ -21,7 +19,6 @@ import com.example.tpmodulonativo.navigation.AppScreens
 import com.example.tpmodulonativo.ui.theme.TpModuloNativoTheme
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.firestore
 
 class RegisterActivity (private val navController: NavController): AppCompatActivity() , IGeoManager,ICreateUserHandler{
@@ -57,49 +54,25 @@ class RegisterActivity (private val navController: NavController): AppCompatActi
         }
 
     }
-    override fun getUserLocation(): GeoPoint? {
-        Log.d("GEOMANAGER","EJECUCION IN PROGRESS..")
-        if (locationManager != null) {
 
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_PERMISSION)
-                val locationProvider = LocationManager.GPS_PROVIDER
-                val lastKnownLocation = locationManager?.getLastKnownLocation(locationProvider)
+    override fun getUserLocation(context: Context): GeoPoint {
+        Log.d("GEOMANAGER", "EJECUCION IN PROGRESS..")
 
-                if (lastKnownLocation != null) {
-                    val latitude = lastKnownLocation.latitude
-                    val longitude = lastKnownLocation.longitude
-                    Log.d("LATITUD",latitude.toString())
-                    return GeoPoint(latitude, longitude)
-                } else {
-                    return null // No se pudo obtener la ubicación
-                }
-            } else {
-                // No se tienen permisos de ubicación, manejar el caso
-                return null
-            }
-        } else {
-            // El servicio de ubicación no está disponible, manejar el caso
-            return null
+        var geoPoint: GeoPoint? = null
+
+        val locationActivity = LocationActivity()
+        locationActivity.conseguirUbicacion(context) { geoPointObtenido ->
+            // Manejar la ubicación obtenida
+            geoPoint = geoPointObtenido
         }
-    }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 1000) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // si tengo el permiso
-                getUserLocation()
-
-            } else {
-                // si no tengo el permiso la aplicacion se cierra
-                Log.d("FALLO CRITICO","AAAYAYAYAY")
-            }
+        // Esperar a que la ubicación se obtenga antes de devolverla
+        while (geoPoint == null) {
+            // Puedes implementar una lógica más elegante aquí, pero por simplicidad,
+            // estoy utilizando un bucle simple para esperar hasta que la ubicación esté disponible.
         }
+
+        return geoPoint!!
     }
 
 
