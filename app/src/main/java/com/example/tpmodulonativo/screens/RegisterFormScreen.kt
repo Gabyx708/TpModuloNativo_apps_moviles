@@ -3,8 +3,12 @@ package com.example.tpmodulonativo.screens
 import GeoPoint
 import android.app.DatePickerDialog
 import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +44,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.example.tpmodulonativo.Models.User
 import com.example.tpmodulonativo.interfaces.ICreateUserHandler
@@ -172,13 +178,14 @@ fun RegistrationForm(createUserHandler: ICreateUserHandler,geoManager:IGeoManage
                     return@Button
                 }
 
+                val ubicacionUsuario = obtenerUbicacionActual(context)
                 val user = User(
                     nickName = nickname.text,
                     name = firstName.text,
                     lastName = lastName.text,
                     email = Email.text,
                     birthday = SimpleDateFormat("dd/MM/yyyy").parse(dateStr),
-                    geoPoint = GeoPoint(34.34343434,32.34343434),
+                    geoPoint = ubicacionUsuario,
                     password = password.text
                 )
 
@@ -188,6 +195,45 @@ fun RegistrationForm(createUserHandler: ICreateUserHandler,geoManager:IGeoManage
             Text("Registrarse")
         }
     }
+}
+
+private val CODIGO_DE_SOLICITUD_DE_PERMISO = 123
+
+// Dentro de tu función o método donde quieras obtener la ubicación del usuario
+fun obtenerUbicacionActual(context: Context): GeoPoint {
+    // Verifica si tienes el permiso necesario
+    if (ContextCompat.checkSelfPermission(
+            context,
+            android.Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+        // Si no tienes permisos, solicítalos al usuario
+        ActivityCompat.requestPermissions(
+            context as AppCompatActivity,
+            arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+            CODIGO_DE_SOLICITUD_DE_PERMISO
+        )
+        // Devuelve un GeoPoint por defecto, ya que la ubicación no está disponible en este momento
+        return GeoPoint(0.0, 0.0)
+    }
+
+    // Obtén el servicio de ubicación
+    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+    // Verifica si el GPS está habilitado
+    if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        // Obtén la última ubicación conocida
+        val location: Location? = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+
+        // Verifica si la ubicación está disponible
+        if (location != null) {
+            // Crea el GeoPoint con las coordenadas de la ubicación
+            return GeoPoint(location.latitude, location.longitude)
+        }
+    }
+
+    // Si no se pudo obtener la ubicación, regresa un GeoPoint por defecto
+    return GeoPoint(0.0, 0.0)
 }
 
 private fun registerUser(user:User,createUserHandler: ICreateUserHandler){
