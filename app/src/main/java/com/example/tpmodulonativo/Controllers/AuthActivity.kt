@@ -41,6 +41,7 @@ class AuthActivity(private val navController: NavController,context: Context): C
                     task.addOnSuccessListener { result ->
                         if (result != null) {
                             preferences.saveName(result.name)
+                            Log.d("GEOPOINT",result.ubication.toString())
                             Log.d("USUARIO_NO_NULO",result.toString())
                         } else {
                             preferences.saveName("algo fallo")

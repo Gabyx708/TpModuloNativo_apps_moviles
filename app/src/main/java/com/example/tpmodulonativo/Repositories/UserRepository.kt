@@ -46,7 +46,7 @@ class UserRepository(val Store : FirebaseFirestore) : IUserRepository {
                     val emailUser = document.getString("email") ?: ""
                     val nickname = document.getString("nickname")?:""
                     val birthday = Date()
-                    val geoPoint = GeoPoint(0.0, 1.1)
+                    val geoPoint = document.getGeoPoint("ubication") as GeoPoint
 
                     val user = User(nickname,name,lastname,emailUser,birthday,geoPoint,"")
                     user
