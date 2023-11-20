@@ -2,6 +2,7 @@ package com.example.tpmodulonativo.screens
 
 import DecorativeBar
 import UserProfile
+import android.app.NotificationManager
 import android.content.Intent
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -53,6 +55,7 @@ fun MakeDonationScreen(navController: NavController, createDonations: ICreateDon
     var observations by remember { mutableStateOf(TextFieldValue()) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+    val context = LocalContext.current
 
     val activity = (navController.context as AppCompatActivity)
 
@@ -165,6 +168,15 @@ fun MakeDonationScreen(navController: NavController, createDonations: ICreateDon
                 // Realiza la publicación de la donación
                 //agregar validaciones , deberia crear una donacion en la coleccion
                 createDonations.createDonation(donation)
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val notificationManager = context.getSystemService(NotificationManager::class.java)
+                    if (notificationManager?.getNotificationChannel("channelId") == null) {
+                        createNotificationChannel(context, "channelId")
+                    }
+                }
+                sendNotification(context, donation?.name ?: "", "¡Tu donación ha sido publicada!","Ya está disponible la donación: ")
+
                 navController.navigate(AppScreens.HomeScreen.route)
             },
             modifier = Modifier.width(300.dp)

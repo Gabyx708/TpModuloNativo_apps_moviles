@@ -1,12 +1,17 @@
 package com.example.tpmodulonativo.screens
 
 import DecorativeBar
+import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import android.view.ViewGroup
+import android.webkit.WebView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -19,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,11 +45,15 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.navigation.NavController
 import com.example.tpmodulonativo.Models.Donation
 import com.example.tpmodulonativo.R
 import com.example.tpmodulonativo.Repositories.DonationsRepository
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.tasks.await
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,12 +95,12 @@ fun DonationDetailScreen(navController: NavController, donationId: String) {
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
-                    .height(300.dp)
+                    .height(200.dp)
                     .clip(MaterialTheme.shapes.medium)
                     .background(MaterialTheme.colorScheme.primary)
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             Text(
                 text = "Nombre: ${donation!!.name}",
@@ -99,24 +109,45 @@ fun DonationDetailScreen(navController: NavController, donationId: String) {
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Text(text = "Descripción: ${donation!!.description}",
                 fontSize = 16.sp,
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Text(text = "Observaciones: ${donation!!.observations}",
                 fontSize = 16.sp,
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp))
 
+            Spacer(modifier = Modifier.height(10.dp))
+
+            donation?.let {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .padding(16.dp)
+                ) {
+                    LocationView(geoPoint = GeoPoint(37.7749, -122.4194)) // Cambia a las coordenadas reales de la donación
+                }
+            }
+
             Spacer(modifier = Modifier.weight(1f),)
 
             Button(
                 onClick = {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        val notificationManager = context.getSystemService(NotificationManager::class.java)
+                        if (notificationManager?.getNotificationChannel("channelId") == null) {
+                            createNotificationChannel(context, "channelId")
+                        }
+                    }
+                    sendNotification(context, donation?.name ?: "","¡Alguien se quiere poner en contacto contigo!","Interesado en la donación: ")
+
                     val emailAddress = "vnyedro@gmail.com"
 
                     val intent = Intent(Intent.ACTION_SEND)
@@ -158,5 +189,75 @@ private fun loadImageFromUri(context: Context, uri: Uri): ImageBitmap? {
     } catch (e: Exception) {
         Log.e("DonationCard", "Error loading image from URI: $uri", e)
         null
+    }
+}
+
+@Composable
+fun LocationView(geoPoint: GeoPoint) {
+    val mapUrl = "https://www.openstreetmap.org/export/embed.html?bbox=${geoPoint.longitude - 0.005},${geoPoint.latitude - 0.005},${geoPoint.longitude + 0.005},${geoPoint.latitude + 0.005}&layer=mapnik&marker=${geoPoint.latitude},${geoPoint.longitude}"
+    // Utiliza WebView para cargar el mapa desde OpenStreetMap
+    AndroidView(
+        factory = { context ->
+            WebView(context).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                settings.javaScriptEnabled = true
+                setBackgroundColor(0) // Establece el fondo transparente
+                loadUrl(mapUrl)
+            }
+        },
+        update = { webView ->
+            webView.loadUrl(mapUrl)
+        }
+    )
+}
+
+@SuppressLint("MissingPermission")
+fun sendNotification(context: Context, donationName: String, title: String, text: String) {
+    try {
+        val channelId = "channelId"
+        val notificationId = 1
+
+        // Verifica y solicita permisos de notificación
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager = context.getSystemService(NotificationManager::class.java)
+            if (notificationManager?.getNotificationChannel(channelId) == null) {
+                createNotificationChannel(context, channelId)
+            }
+        }
+
+        // Construir la notificación
+        val builder = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setContentTitle(title)
+            .setContentText("$text $donationName")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+
+        // Mostrar la notificación
+        with(NotificationManagerCompat.from(context)) {
+            notify(notificationId, builder.build())
+        }
+    } catch (e: Exception) {
+        Log.e("NotificationError", "Error al enviar la notificación: ${e.message}", e)
+    }
+}
+
+fun createNotificationChannel(context: Context, channelId: String) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val channel = NotificationChannel(
+            channelId,
+            "Channel Name",
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Channel Description"
+            enableLights(true)
+        }
+
+        val notificationManager: NotificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 }

@@ -73,7 +73,7 @@ fun InputUserField(usuarioState: MutableState<TextFieldValue>){
     TextField(
         value = usuarioState.value,
         onValueChange = {usuarioState.value = it},
-        label = { Text("usuario")}
+        label = { Text("Usuario")}
     )
 }
 
@@ -89,8 +89,8 @@ fun InputPasswordField(passwordState: MutableState<TextFieldValue>) {
                     painterResource(id = com.google.android.material.R.drawable.design_ic_visibility_off)
 
         OutlinedTextField(value = passwordState.value, onValueChange ={passwordState.value = it},
-            label = { Text("password")},
-            placeholder = {Text(text="password aqui")},
+            label = { Text("Contraseña")},
+            placeholder = {Text(text="Contraseña aquí")},
             trailingIcon = {
                 IconButton(onClick = { passVisible = !passVisible }) {
                     Icon(painter =icon, contentDescription = "eye")
@@ -115,11 +115,11 @@ fun ButtonsGroup(ButtonHandler : ISessionUserHandler, usuario:String, password:S
             }
 
         }) {
-            Text(text = "inciar sesion")
+            Text(text = "Iniciar sesión")
         }
         Spacer(modifier = Modifier.width(10.dp))
         Button(onClick = { navController.navigate(AppScreens.RegisterFormScreen.route) }) {
-            Text(text = "registrame")
+            Text(text = "Registrame")
         }
     }
 }

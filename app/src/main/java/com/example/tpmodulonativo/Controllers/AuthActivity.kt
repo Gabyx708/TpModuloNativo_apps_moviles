@@ -27,9 +27,9 @@ class AuthActivity(private val navController: NavController,context: Context): C
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     navController.navigate(route = AppScreens.HomeScreen.route);
-                    Toast.makeText(context,"usuario creado exitosamente",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context,"Sesión iniciada correctamente",Toast.LENGTH_SHORT).show()
                 } else {
-                    SignUpFail("usuario o password incorrecto",context)
+                    SignUpFail("Usuario o password incorrecto",context)
                 }
             }
     }

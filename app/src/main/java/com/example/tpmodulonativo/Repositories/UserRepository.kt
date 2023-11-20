@@ -24,8 +24,30 @@ class UserRepository(val Store : FirebaseFirestore) : IUserRepository {
         return NewUser
     }
 
-    override fun GetUserById(IdUser: String): User {
-        TODO("Not yet implemented")
+    override fun GetUserByEmail(email: String): User? {
+        var user: User? = null
+
+        // Realiza la consulta en la colección "usuarios" filtrando por el campo "email"
+        Store.collection("usuarios")
+            .whereEqualTo("email", email)
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                // Si la consulta tiene resultados, obtén el primer documento (debería haber solo uno)
+                if (!querySnapshot.isEmpty) {
+                    val document = querySnapshot.documents[0]
+
+                    // Crea un objeto User a partir de los datos del documento
+                    user = document.toObject(User::class.java)
+                    Log.d(TAG, "User found: $user")
+                } else {
+                    Log.d(TAG, "No user found with email: $email")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error getting user by email", e)
+            }
+
+        return user
     }
 
 }

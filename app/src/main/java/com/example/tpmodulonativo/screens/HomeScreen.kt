@@ -58,7 +58,7 @@ fun HomeScreen(navController: NavController){
 }
 
 @Composable
-fun UserProfile(userName: String = "test") {
+fun UserProfile(userName: String = "Valentin") {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(16.dp)
