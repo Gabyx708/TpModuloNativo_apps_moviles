@@ -1,6 +1,7 @@
 package com.example.tpmodulonativo.screens
 
 import DecorativeBar
+import GeoPoint
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -52,8 +53,8 @@ import androidx.navigation.NavController
 import com.example.tpmodulonativo.Models.Donation
 import com.example.tpmodulonativo.R
 import com.example.tpmodulonativo.Repositories.DonationsRepository
+import com.example.tpmodulonativo.Repositories.Preferences
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.GeoPoint
 import kotlinx.coroutines.tasks.await
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -90,7 +91,7 @@ fun DonationDetailScreen(navController: NavController, donationId: String) {
 
             Image(
                 bitmap = loadImageFromUri(LocalContext.current, Uri.parse(donation!!.imageUri))
-                    ?: ImageBitmap.imageResource(R.drawable.donation_item), // Usa un recurso predeterminado si la imagen es nula
+                    ?: ImageBitmap.imageResource(R.drawable.donation_item),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(16.dp)
@@ -132,43 +133,94 @@ fun DonationDetailScreen(navController: NavController, donationId: String) {
                         .height(200.dp)
                         .padding(16.dp)
                 ) {
-                    LocationView(geoPoint = GeoPoint(37.7749, -122.4194)) // Cambia a las coordenadas reales de la donación
+                    LocationView(geoPoint = donation!!.ubication)
                 }
             }
 
             Spacer(modifier = Modifier.weight(1f),)
 
-            Button(
-                onClick = {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        val notificationManager = context.getSystemService(NotificationManager::class.java)
-                        if (notificationManager?.getNotificationChannel("channelId") == null) {
-                            createNotificationChannel(context, "channelId")
+            var preferences = Preferences(context)
+            val MAIL_USUARIO = preferences.getMail()
+
+            if (donation!!.user == MAIL_USUARIO) {
+                Button(
+                    onClick = {
+                        if (donation!!.estado) {
+                            donation!!.estado = false
+                            try {
+                                donationsRepository.UpdateDonationState(donationId, false)
+                                sendNotification(context, donation?.name ?: "", "¡Tu publicación ha sido retirada!","Se retiró del listado la donación: ")
+                                navController.popBackStack()
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        } else {
+                            donation!!.estado = true
+                            try {
+                                donationsRepository.UpdateDonationState(donationId, true)
+                                sendNotification(context, donation?.name ?: "", "¡Tu publicación volvió a estar activa!","Se agregó al listado la donación: ")
+                                navController.popBackStack()
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
                         }
-                    }
-                    sendNotification(context, donation?.name ?: "","¡Alguien se quiere poner en contacto contigo!","Interesado en la donación: ")
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(start = 16.dp, end = 16.dp)
+                ) {
+                    Text(if (donation!!.estado) "Retirar publicación" else "Volver a publicar")
+                }
+            } else {
+                Button(
+                    onClick = {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            val notificationManager =
+                                context.getSystemService(NotificationManager::class.java)
+                            if (notificationManager?.getNotificationChannel("channelId") == null) {
+                                createNotificationChannel(context, "channelId")
+                            }
+                        }
+                        sendNotification(
+                            context,
+                            donation?.name ?: "",
+                            "¡Alguien se quiere poner en contacto contigo!",
+                            "Interesado en la donación: "
+                        )
 
-                    val emailAddress = "vnyedro@gmail.com"
+                        val emailAddress = donation?.user ?: ""
 
-                    val intent = Intent(Intent.ACTION_SEND)
-                        .setData(Uri.parse("mailto:$emailAddress"))
-                        .setType("text/plain")
-                        .putExtra(Intent.EXTRA_TEXT, "Hola, estoy interesado en la donación: ${donation!!.name}. ¡Me sería de gran ayuda!")
-                        .putExtra(Intent.EXTRA_SUBJECT, "Interés en la donación: ${donation!!.name}")
-                        .putExtra(Intent.EXTRA_EMAIL, arrayOf(emailAddress))
+                        val intent = Intent(Intent.ACTION_SEND)
+                            .setData(Uri.parse("mailto:$emailAddress"))
+                            .setType("text/plain")
+                            .putExtra(
+                                Intent.EXTRA_TEXT,
+                                "Hola, estoy interesado en la donación: ${donation!!.name}. ¡Me sería de gran ayuda!"
+                            )
+                            .putExtra(
+                                Intent.EXTRA_SUBJECT,
+                                "Interés en la donación: ${donation!!.name}"
+                            )
+                            .putExtra(Intent.EXTRA_EMAIL, arrayOf(emailAddress))
 
-                    if (intent.resolveActivity(context.packageManager) != null) {
-                        context.startActivity(intent)
-                    } else {
-                        Toast.makeText(context, "No hay aplicación de mensajería disponible", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .padding(start = 16.dp, end = 16.dp)
-            ) {
-                Text("Ponte en contacto")
+                        if (intent.resolveActivity(context.packageManager) != null) {
+                            context.startActivity(intent)
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "No hay aplicación de mensajería disponible",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(start = 16.dp, end = 16.dp)
+                ) {
+                    Text("Ponte en contacto")
+                }
             }
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -195,7 +247,6 @@ private fun loadImageFromUri(context: Context, uri: Uri): ImageBitmap? {
 @Composable
 fun LocationView(geoPoint: GeoPoint) {
     val mapUrl = "https://www.openstreetmap.org/export/embed.html?bbox=${geoPoint.longitude - 0.005},${geoPoint.latitude - 0.005},${geoPoint.longitude + 0.005},${geoPoint.latitude + 0.005}&layer=mapnik&marker=${geoPoint.latitude},${geoPoint.longitude}"
-    // Utiliza WebView para cargar el mapa desde OpenStreetMap
     AndroidView(
         factory = { context ->
             WebView(context).apply {
@@ -204,7 +255,7 @@ fun LocationView(geoPoint: GeoPoint) {
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
                 settings.javaScriptEnabled = true
-                setBackgroundColor(0) // Establece el fondo transparente
+                setBackgroundColor(0)
                 loadUrl(mapUrl)
             }
         },
@@ -220,7 +271,6 @@ fun sendNotification(context: Context, donationName: String, title: String, text
         val channelId = "channelId"
         val notificationId = 1
 
-        // Verifica y solicita permisos de notificación
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationManager = context.getSystemService(NotificationManager::class.java)
             if (notificationManager?.getNotificationChannel(channelId) == null) {
@@ -228,7 +278,6 @@ fun sendNotification(context: Context, donationName: String, title: String, text
             }
         }
 
-        // Construir la notificación
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_launcher_background)
             .setContentTitle(title)
@@ -236,7 +285,6 @@ fun sendNotification(context: Context, donationName: String, title: String, text
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
 
-        // Mostrar la notificación
         with(NotificationManagerCompat.from(context)) {
             notify(notificationId, builder.build())
         }

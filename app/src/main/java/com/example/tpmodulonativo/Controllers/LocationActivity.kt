@@ -73,9 +73,7 @@ class LocationActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 1000) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Si tengo el permiso
                 conseguirUbicacion(this) { geoPoint ->
-                    // Manejar la ubicación obtenida
                     if (geoPoint != null) {
                         Log.d("LATITUD", geoPoint.latitude.toString())
                         Log.d("LONGITUD", geoPoint.longitude.toString())
@@ -84,7 +82,6 @@ class LocationActivity : AppCompatActivity() {
                     }
                 }
             } else {
-                // Si no tengo el permiso la aplicación se cierra
                 finish()
             }
         }

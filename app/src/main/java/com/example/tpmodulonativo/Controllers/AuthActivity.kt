@@ -34,9 +34,7 @@ class AuthActivity(private val navController: NavController,context: Context): C
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     navController.navigate(route = AppScreens.HomeScreen.route);
-<<<<<<< HEAD
                     Toast.makeText(context,"Sesión iniciada correctamente",Toast.LENGTH_SHORT).show()
-=======
                     var preferences = Preferences(context)
 
                     val task = repository.GetUserByEmail(user)
@@ -44,6 +42,8 @@ class AuthActivity(private val navController: NavController,context: Context): C
                     task.addOnSuccessListener { result ->
                         if (result != null) {
                             preferences.saveName(result.name)
+                            preferences.saveMail(result.email)
+                            preferences.saveLocation(result.ubication.latitude,result.ubication.longitude)
                             Log.d("GEOPOINT",result.ubication.toString())
                             Log.d("USUARIO_NO_NULO",result.toString())
                         } else {
@@ -51,14 +51,9 @@ class AuthActivity(private val navController: NavController,context: Context): C
                             Log.d("USUARIO_RECUPERADO",task.toString())
                         }
                     }.addOnFailureListener { exception ->
-                        // Manejar errores aquí
                         preferences.saveName("algo fallo: $exception")
                     }
 
-
-
-                    Toast.makeText(context,"usuario creado exitosamente",Toast.LENGTH_SHORT).show()
->>>>>>> shared-preferences
                 } else {
                     SignUpFail("Usuario o password incorrecto",context)
                 }

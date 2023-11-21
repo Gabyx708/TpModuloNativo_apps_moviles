@@ -1,5 +1,6 @@
 package com.example.tpmodulonativo.Repositories
 
+import GeoPoint
 import android.content.ContentValues
 import android.util.Log
 import com.example.tpmodulonativo.Models.Donation
@@ -35,8 +36,12 @@ class DonationsRepository(val Store : FirebaseFirestore) : IDonationsRepository 
                     val observations = data["observations"] as String
                     val imageUri = data["imageUri"] as String? // Puede ser nulo si la imagen no se especifica
                     val estado = data["estado"] as Boolean
+                    val latitude = (data["ubication"] as? Map<*, *>)?.get("latitude") as? Double ?: -34.608440
+                    val longitude = (data["ubication"] as? Map<*, *>)?.get("longitude") as? Double ?: -58.371283
+                    val ubication = GeoPoint(latitude, longitude)
+                    val user = data["user"] as String
 
-                    val donation = Donation(id, name, description, observations, imageUri, estado)
+                    val donation = Donation(id, name, description, observations, imageUri, estado, ubication, user)
                     return@continueWith donation
                 } else {
                     throw Exception("Documento no encontrado o error al obtenerlo.")
@@ -60,8 +65,12 @@ class DonationsRepository(val Store : FirebaseFirestore) : IDonationsRepository 
                         val observations = document.getString("observations") ?: ""
                         val imageUri = document.getString("imageUri")
                         val estado = document.getBoolean("estado") ?: false
+                        val latitude = (document.get("ubication") as? Map<*, *>)?.get("latitude") as? Double ?: -34.608440
+                        val longitude = (document.get("ubication") as? Map<*, *>)?.get("longitude") as? Double ?: -58.371283
+                        val ubication = GeoPoint(latitude, longitude)
+                        val user = document.getString("user") ?: ""
 
-                        val donation = Donation(id, name, description, observations, imageUri, estado)
+                        val donation = Donation(id, name, description, observations, imageUri, estado, ubication, user)
                         donationsList.add(donation)
                     }
 
@@ -69,6 +78,19 @@ class DonationsRepository(val Store : FirebaseFirestore) : IDonationsRepository 
                 } else {
                     throw Exception("Error al obtener la lista de donaciones.")
                 }
+            }
+    }
+
+    fun UpdateDonationState(idDonation: String, newState: Boolean): Task<Void> {
+        val donationRef = Store.collection("donaciones").document(idDonation)
+
+        return donationRef
+            .update("estado", newState)
+            .addOnSuccessListener {
+                Log.d("DonationRepository", "Estado ctualizado correctamente")
+            }
+            .addOnFailureListener { e ->
+                Log.w("DonationRepository", "No se pudo actualizar el estado", e)
             }
     }
 

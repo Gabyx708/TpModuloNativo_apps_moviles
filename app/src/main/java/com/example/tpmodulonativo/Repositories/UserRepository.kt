@@ -13,7 +13,6 @@ class UserRepository(val Store : FirebaseFirestore) : IUserRepository {
 
     override fun InsertUser(NewUser: User): User {
 
-        // agrega el usuario a la DB
         Store.collection("usuarios")
             .add(NewUser)
             .addOnSuccessListener { documentReference ->
@@ -25,32 +24,6 @@ class UserRepository(val Store : FirebaseFirestore) : IUserRepository {
 
 
         return NewUser
-    }
-
-    override fun GetUserByEmail(email: String): User? {
-        var user: User? = null
-
-        // Realiza la consulta en la colección "usuarios" filtrando por el campo "email"
-        Store.collection("usuarios")
-            .whereEqualTo("email", email)
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                // Si la consulta tiene resultados, obtén el primer documento (debería haber solo uno)
-                if (!querySnapshot.isEmpty) {
-                    val document = querySnapshot.documents[0]
-
-                    // Crea un objeto User a partir de los datos del documento
-                    user = document.toObject(User::class.java)
-                    Log.d(TAG, "User found: $user")
-                } else {
-                    Log.d(TAG, "No user found with email: $email")
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.w(TAG, "Error getting user by email", e)
-            }
-
-        return user
     }
 
     override fun GetUserByEmail(email: String): Task<User> {
@@ -68,8 +41,8 @@ class UserRepository(val Store : FirebaseFirestore) : IUserRepository {
                     val emailUser = document.getString("email") ?: ""
                     val nickname = document.getString("nickname")?:""
                     val birthday = Date()
-                    val latitude = document.getDouble("latitude") ?: 0.0
-                    val longitude = document.getDouble("longitude") ?: 0.0
+                    val latitude = (document.get("ubication") as? Map<*, *>)?.get("latitude") as? Double ?: -34.608440
+                    val longitude = (document.get("ubication") as? Map<*, *>)?.get("longitude") as? Double ?: -58.371283
                     val geoPoint = GeoPoint(latitude, longitude)
 
                     val user = User(nickname,name,lastname,emailUser,birthday,geoPoint,"")
@@ -79,10 +52,5 @@ class UserRepository(val Store : FirebaseFirestore) : IUserRepository {
                 }
             }
     }
-
-
-
-
-
 }
 

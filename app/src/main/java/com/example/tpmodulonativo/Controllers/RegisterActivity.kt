@@ -24,9 +24,6 @@ import com.google.firebase.firestore.firestore
 class RegisterActivity (private val navController: NavController): AppCompatActivity() , IGeoManager,ICreateUserHandler{
 
     private var locationManager : LocationManager? = null
-
-    private val REQUEST_LOCATION_PERMISSION = 1
-
     private var authService = Firebase.auth
     private val db = Firebase.firestore
     private val userRepository : IUserRepository = UserRepository(db)
@@ -62,14 +59,7 @@ class RegisterActivity (private val navController: NavController): AppCompatActi
 
         val locationActivity = LocationActivity()
         locationActivity.conseguirUbicacion(context) { geoPointObtenido ->
-            // Manejar la ubicación obtenida
             geoPoint = geoPointObtenido
-        }
-
-        // Esperar a que la ubicación se obtenga antes de devolverla
-        while (geoPoint == null) {
-            // Puedes implementar una lógica más elegante aquí, pero por simplicidad,
-            // estoy utilizando un bucle simple para esperar hasta que la ubicación esté disponible.
         }
 
         return geoPoint!!
@@ -81,7 +71,6 @@ class RegisterActivity (private val navController: NavController): AppCompatActi
         authService.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    // El usuario se registró con éxito en Firebase Authentication
                     val user = task.result?.user
                     if (user != null) {
                         Log.d(TAG, "createUserWithEmail:success, userId: ${user.uid}")
@@ -90,7 +79,6 @@ class RegisterActivity (private val navController: NavController): AppCompatActi
                         Log.w(TAG, "createUserWithEmail:success, pero el usuario es nulo")
                     }
                 } else {
-                    // Hubo un error durante el registro
                     Log.w(TAG, "createUserWithEmail:failure", task.exception)
                 }
             }

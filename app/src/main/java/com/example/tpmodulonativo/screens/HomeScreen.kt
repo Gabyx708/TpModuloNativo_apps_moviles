@@ -1,3 +1,4 @@
+
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.background
@@ -33,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -63,11 +63,7 @@ fun HomeScreen(navController: NavController,context: Context){
 }
 
 @Composable
-<<<<<<< HEAD
-fun UserProfile(userName: String = "Valentin") {
-=======
 fun UserProfile(userName: String = "") {
->>>>>>> shared-preferences
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(16.dp)
@@ -79,7 +75,7 @@ fun UserProfile(userName: String = "") {
         )
 
         Spacer(modifier = Modifier.width(8.dp))
-        Text(text = "Bienvenido "+userName, style = TextStyle(fontWeight = FontWeight.Bold))
+        Text(text = "Bienvenido "+userName, style = TextStyle(fontWeight = FontWeight.Bold), fontSize = 16.sp)
     }
 }
 
@@ -112,7 +108,7 @@ fun OptionContainer(navController: NavController){
                     contentDescription = "Add",
                     modifier = Modifier.size(150.dp)
                 )
-                Spacer(Modifier.size(8.dp)) // Espacio entre el icono y el texto
+                Spacer(Modifier.size(8.dp))
                 Text(
                     text = "Hacer una donación",
                     fontSize = 20.sp
@@ -147,6 +143,21 @@ fun OptionContainer(navController: NavController){
                 )
             }
         }
+
+        Button(
+            onClick = { navController.navigate(AppScreens.MyDonationsScreen.route) },
+            contentPadding = PaddingValues(20.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .sizeIn(minHeight = 20.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 0.dp)
+                .then(Modifier.background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(12.dp)))
+        ) {
+            Text(
+                text = "Mis donaciones",
+                fontSize = 16.sp
+            )
+        }
     }
 }
 
@@ -156,23 +167,6 @@ fun DecorativeBar() {
         modifier = Modifier
             .fillMaxWidth()
             .height(25.dp)
-            .background(MaterialTheme.colorScheme.primary) // Usa el color principal de tu tema
+            .background(MaterialTheme.colorScheme.primary)
     )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Preview
-@Composable
-fun HomeScreenPreview(navController: NavController) {
-    Scaffold() {
-        Column {
-            DecorativeBar()
-            UserProfile()
-            Spacer(modifier = Modifier.height(10.dp))
-            OptionContainer(navController)
-            Spacer(modifier = Modifier.weight(1f))
-            DecorativeBar()
-        }
-    }
 }

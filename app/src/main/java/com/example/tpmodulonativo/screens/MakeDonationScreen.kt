@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.tpmodulonativo.Models.Donation
 import com.example.tpmodulonativo.R
+import com.example.tpmodulonativo.Repositories.Preferences
 import com.example.tpmodulonativo.interfaces.ICreateDonations
 import com.example.tpmodulonativo.navigation.AppScreens
 
@@ -58,6 +59,8 @@ fun MakeDonationScreen(navController: NavController, createDonations: ICreateDon
     val context = LocalContext.current
 
     val activity = (navController.context as AppCompatActivity)
+    var preferences = Preferences(context)
+    val NOMBRE_USUARIO = preferences.getName()
 
     val galleryLauncher: ActivityResultLauncher<Array<String>> = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
@@ -86,7 +89,7 @@ fun MakeDonationScreen(navController: NavController, createDonations: ICreateDon
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
-        UserProfile()
+        UserProfile(NOMBRE_USUARIO)
 
         TextField(
             shape = RoundedCornerShape(10.dp),
@@ -127,7 +130,6 @@ fun MakeDonationScreen(navController: NavController, createDonations: ICreateDon
                     }
             )
         } else {
-            // Icono de placeholder
             Image(
                 painter = painterResource(id = R.drawable.subir),
                 contentDescription = null,
@@ -154,6 +156,9 @@ fun MakeDonationScreen(navController: NavController, createDonations: ICreateDon
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        var preferences = Preferences(context)
+        val UBICACION_USUARIO = preferences.getLocation()
+        val MAIL_USUARIO = preferences.getMail()
         Button(
             onClick = {
                 // Lógica para publicar la donación
@@ -162,11 +167,11 @@ fun MakeDonationScreen(navController: NavController, createDonations: ICreateDon
                     description = description.text,
                     observations = observations.text,
                     imageUri = imageUri.toString(), //? revisar
-                    estado = true
+                    estado = true,
+                    ubication = UBICACION_USUARIO,
+                    user = MAIL_USUARIO
                 )
 
-                // Realiza la publicación de la donación
-                //agregar validaciones , deberia crear una donacion en la coleccion
                 createDonations.createDonation(donation)
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

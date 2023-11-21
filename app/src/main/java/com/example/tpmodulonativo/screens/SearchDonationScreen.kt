@@ -11,10 +11,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,7 +43,9 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tpmodulonativo.Models.Donation
 import com.example.tpmodulonativo.R
@@ -79,9 +83,27 @@ fun SearchDonationScreen(navController: NavController) {
             }
         )
         LazyColumn {
-            items(donationsList) { donation ->
-                DonationCard(donation = donation) {
-                    navController.navigate("${AppScreens.DonationDetailScreen.route}/${donation.id}")
+            val filteredDonations = donationsList.filter { it.estado }
+            if (filteredDonations.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Todavía no hay donaciones",
+                            fontSize = 20.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            } else {
+                items(filteredDonations) { donation ->
+                    DonationCard(donation = donation) {
+                        navController.navigate("${AppScreens.DonationDetailScreen.route}/${donation.id}")
+                    }
                 }
             }
         }

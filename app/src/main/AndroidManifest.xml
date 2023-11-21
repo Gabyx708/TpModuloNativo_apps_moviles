@@ -12,12 +12,8 @@
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SEND_SMS" />
-<<<<<<< HEAD
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
-=======
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
->>>>>>> shared-preferences
 
     <application
         android:allowBackup="true"
@@ -29,9 +25,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TpModuloNativo"
         tools:targetApi="31">
-        <activity
-            android:name=".Controllers.LocationActivity"
-            android:exported="false" />
         <activity
             android:name=".Controllers.DonationDetailActivty"
             android:exported="false" />

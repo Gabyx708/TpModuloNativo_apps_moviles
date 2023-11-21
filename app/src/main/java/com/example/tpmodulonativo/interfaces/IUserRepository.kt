@@ -5,8 +5,6 @@ import com.google.android.gms.tasks.Task
 
 interface IUserRepository {
     fun InsertUser(NewUser: User): User
-    fun GetUserByEmail(IdUser : String) : User ?
-
     fun GetUserByEmail(email :String) : Task<User>
 
 }

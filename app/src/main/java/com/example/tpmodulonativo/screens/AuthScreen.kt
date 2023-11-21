@@ -4,12 +4,15 @@ package com.example.tpmodulonativo.screens
 import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +37,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.tpmodulonativo.R
 import com.example.tpmodulonativo.interfaces.ISessionUserHandler
 import com.example.tpmodulonativo.navigation.AppScreens
 
@@ -58,6 +62,15 @@ fun BodyContent(ButtonHandler : ISessionUserHandler, usuarioState: MutableState<
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     )  {
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+                .padding(10.dp)
+
+        )
         InputUserField(usuarioState)
         Spacer(modifier = Modifier.height(8.dp))
         InputPasswordField(passwordState)

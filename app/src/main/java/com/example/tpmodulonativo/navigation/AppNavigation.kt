@@ -14,6 +14,7 @@ import com.example.tpmodulonativo.Controllers.RegisterActivity
 import com.example.tpmodulonativo.screens.AuthScreen
 import com.example.tpmodulonativo.screens.DonationDetailScreen
 import com.example.tpmodulonativo.screens.MakeDonationScreen
+import com.example.tpmodulonativo.screens.MyDonationsScreen
 import com.example.tpmodulonativo.screens.RegisterScreen
 import com.example.tpmodulonativo.screens.SearchDonationScreen
 
@@ -52,6 +53,9 @@ fun AppNavigation(){
             val arguments = requireNotNull(backStackEntry.arguments)
             val donationId = arguments.getString("donationId") ?: ""
             DonationDetailScreen(navController, donationId)
+        }
+        composable(route = AppScreens.MyDonationsScreen.route){
+            MyDonationsScreen(navController)
         }
     }
 }
